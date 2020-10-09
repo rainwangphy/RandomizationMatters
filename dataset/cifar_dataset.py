@@ -1,9 +1,11 @@
 from __future__ import print_function
-from PIL import Image
+
 import os
 import os.path
-import numpy as np
 import sys
+
+import numpy as np
+from PIL import Image
 
 if sys.version_info[0] == 2:
     import cPickle as pickle
@@ -14,6 +16,7 @@ from .vision import VisionDataset
 from .utils_vision import check_integrity, download_and_extract_archive
 
 import torch
+
 
 class CIFAR10(VisionDataset):
     """`CIFAR10 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
@@ -54,7 +57,7 @@ class CIFAR10(VisionDataset):
     }
 
     def __init__(self, root, train=True, transform=None, target_transform=None,
-                 download=False, case = 0):
+                 download=False, case=0):
 
         super(CIFAR10, self).__init__(root, transform=transform,
                                       target_transform=target_transform)
@@ -93,8 +96,7 @@ class CIFAR10(VisionDataset):
         self.data = np.vstack(self.data).reshape(-1, 3, 32, 32)
         self.data = self.data.transpose((0, 2, 3, 1))  # convert to HWC
 
-
-        self.data_weights = np.ones(len(self.data))/len(self.data)
+        self.data_weights = np.ones(len(self.data)) / len(self.data)
 
         self._load_meta()
 
@@ -108,7 +110,7 @@ class CIFAR10(VisionDataset):
 
             if self.target_transform is not None:
                 target = self.target_transform(target)
-            tmp [i] = img
+            tmp[i] = img
 
         self.data = tmp
 
@@ -140,7 +142,6 @@ class CIFAR10(VisionDataset):
         # return img, target, data_weights
         return img, target
 
-
     def __len__(self):
         return len(self.data)
 
@@ -160,7 +161,6 @@ class CIFAR10(VisionDataset):
 
     def extra_repr(self):
         return "Split: {}".format("Train" if self.train is True else "Test")
-
 
 
 class CIFAR100(CIFAR10):

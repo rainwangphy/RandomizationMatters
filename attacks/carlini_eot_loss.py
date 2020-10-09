@@ -13,18 +13,15 @@ from __future__ import unicode_literals
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
-from advertorch.utils import calc_l2distsq
-from advertorch.utils import tanh_rescale
-from advertorch.utils import torch_arctanh
-from advertorch.utils import clamp
-from advertorch.utils import to_one_hot
-from advertorch.utils import replicate_input
-
 from advertorch.attacks.base import Attack
 from advertorch.attacks.base import LabelMixin
 from advertorch.attacks.utils import is_successful
-
+from advertorch.utils import calc_l2distsq
+from advertorch.utils import clamp
+from advertorch.utils import replicate_input
+from advertorch.utils import tanh_rescale
+from advertorch.utils import to_one_hot
+from advertorch.utils import torch_arctanh
 
 CARLINI_L2DIST_UPPER = 1e10
 CARLINI_COEFF_UPPER = 1e10
@@ -125,11 +122,10 @@ class CarliniAttackEotLoss(Attack, LabelMixin):
 
         return is_successful(pred, label, self.targeted)
 
-
     def _forward_and_update_delta(
             self, optimizer, x_atanh, delta, y_onehot, loss_coeffs):
 
-        softmax = nn.Softmax(dim = 1)
+        softmax = nn.Softmax(dim=1)
         optimizer.zero_grad()
         adv = tanh_rescale(delta + x_atanh, self.clip_min, self.clip_max)
         transimgs_rescale = tanh_rescale(x_atanh, self.clip_min, self.clip_max)
@@ -138,19 +134,17 @@ class CarliniAttackEotLoss(Attack, LabelMixin):
         for i in range(len(self.predict.classifiers)):
             output_i = self.predict.predict(adv, i)
 
-            if i == 0 :
-                loss = self._loss_fn(output_i.clone(), y_onehot, l2distsq, loss_coeffs)* self.predict.weights[i]
+            if i == 0:
+                loss = self._loss_fn(output_i.clone(), y_onehot, l2distsq, loss_coeffs) * self.predict.weights[i]
                 output = softmax(output_i.clone()) * self.predict.weights[i]
-            else :
-                loss = loss + self._loss_fn(output_i.clone(), y_onehot, l2distsq, loss_coeffs)* self.predict.weights[i]
+            else:
+                loss = loss + self._loss_fn(output_i.clone(), y_onehot, l2distsq, loss_coeffs) * self.predict.weights[i]
                 output = output + softmax(output_i.clone()) * self.predict.weights[i]
-
 
         loss.backward()
         optimizer.step()
 
         return loss.item(), l2distsq.data, output.data, adv.data
-
 
     def _get_arctanh_x(self, x):
         result = clamp((x - self.clip_min) / (self.clip_max - self.clip_min),
@@ -192,16 +186,15 @@ class CarliniAttackEotLoss(Attack, LabelMixin):
 
                 if coeff_upper_bound[ii] < UPPER_CHECK:
                     loss_coeffs[ii] = (
-                        coeff_lower_bound[ii] + coeff_upper_bound[ii]) / 2
+                                              coeff_lower_bound[ii] + coeff_upper_bound[ii]) / 2
             else:
                 coeff_lower_bound[ii] = max(
                     coeff_lower_bound[ii], loss_coeffs[ii])
                 if coeff_upper_bound[ii] < UPPER_CHECK:
                     loss_coeffs[ii] = (
-                        coeff_lower_bound[ii] + coeff_upper_bound[ii]) / 2
+                                              coeff_lower_bound[ii] + coeff_upper_bound[ii]) / 2
                 else:
                     loss_coeffs[ii] *= 10
-
 
     def perturb(self, x, y=None):
         x, y = self._verify_and_process_inputs(x, y)

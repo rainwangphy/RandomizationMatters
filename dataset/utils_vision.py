@@ -1,14 +1,14 @@
+import errno
+import gzip
+import hashlib
 import os
 import os.path
-import hashlib
-import gzip
-import errno
 import tarfile
 import zipfile
 
 import torch
-from torch.utils.model_zoo import tqdm
 from torch._six import PY3
+from torch.utils.model_zoo import tqdm
 
 
 def gen_bar_updater():

@@ -11,16 +11,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import numpy as np
-import torch
-import torch.nn as nn
-
-from advertorch.utils import *
-
 from advertorch.attacks.base import Attack
 from advertorch.attacks.base import LabelMixin
 from advertorch.attacks.utils import rand_init_delta
+from advertorch.utils import *
 
-import sys
 
 def perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
                       delta_init=None, minimize=False, ord=np.inf,
@@ -47,7 +42,7 @@ def perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
     max_loss_value = -100000
     for jj in range(3):
         max_loss_value_iter = -100000
-        
+
         if delta_init is not None:
             delta = torch.zeros_like(xvar)
             delta = nn.Parameter(delta)
@@ -66,17 +61,15 @@ def perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
             if xvar.is_cuda:
                 avg_grad = avg_grad.cuda()
 
-            p = predict.weights/np.sum(predict.weights)
-    
-        
+            p = predict.weights / np.sum(predict.weights)
+
             for id_classifier, classifier in enumerate(predict.classifiers):
-                if id_classifier == 0 : 
-                    outputs = classifier(xvar+delta) * p[id_classifier]
-                else : 
+                if id_classifier == 0:
+                    outputs = classifier(xvar + delta) * p[id_classifier]
+                else:
                     outputs = outputs + classifier(xvar + delta) * p[id_classifier]
 
             loss = loss_fn(outputs, yvar)
-
 
             if minimize:
                 loss = -loss
@@ -89,14 +82,14 @@ def perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
                 delta.data = delta.data + batch_multiply(eps_iter, grad_sign)
                 delta.data = batch_clamp(eps, delta.data)
                 delta.data = clamp(xvar.data + delta.data, clip_min, clip_max
-                               ) - xvar.data
+                                   ) - xvar.data
 
             elif ord == 2:
                 grad = avg_grad
                 grad = normalize_by_pnorm(grad)
                 delta.data = delta.data + batch_multiply(eps_iter, grad)
                 delta.data = clamp(xvar.data + delta.data, clip_min, clip_max
-                               ) - xvar.data
+                                   ) - xvar.data
                 if eps is not None:
                     delta.data = clamp_by_pnorm(delta.data, ord, eps)
 
@@ -108,44 +101,42 @@ def perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
                     batch_size = grad.size(0)
                     view = abs_grad.view(batch_size, -1)
                     view_size = view.size(1)
-                    vals, idx = view.topk(int(sparsity*view_size))
+                    vals, idx = view.topk(int(sparsity * view_size))
 
                     out = torch.zeros_like(view).scatter_(1, idx, vals)
 
                     out = out.view_as(grad)
-                    grad = grad.sign()*(out > 0).float()
+                    grad = grad.sign() * (out > 0).float()
                     grad = normalize_by_pnorm(grad, p=1)
                     delta.data += batch_multiply(eps_iter, grad)
                     delta.data = batch_l1_proj(delta.data.cpu(), eps)
                     if xvar.is_cuda:
                         delta.data = delta.data.cuda()
                     delta.data = clamp(xvar.data + delta.data, clip_min, clip_max
-                                   ) - xvar.data
+                                       ) - xvar.data
             else:
                 error = "Only ord = inf, ord = 1 and ord = 2 have been implemented"
                 raise NotImplementedError(error)
 
             delta.grad.data.zero_()
-            
+
             x_adv = clamp(xvar + delta, clip_min, clip_max)
-            
+
             for id_classifier, classifier in enumerate(predict.classifiers):
-                if id_classifier == 0 : 
-                    outputs_2 = classifier(xvar+delta) * p[id_classifier]
-                else : 
+                if id_classifier == 0:
+                    outputs_2 = classifier(xvar + delta) * p[id_classifier]
+                else:
                     outputs_2 = outputs_2 + classifier(xvar + delta) * p[id_classifier]
 
             loss_2 = loss_fn(outputs, yvar)
 
-            if max_loss_value_iter < loss_2 : 
+            if max_loss_value_iter < loss_2:
                 max_loss_value_iter = loss_2
                 max_adv_iter = x_adv
 
-
-        if max_loss_value < max_loss_value_iter :
+        if max_loss_value < max_loss_value_iter:
             max_loss_value = max_loss_value_iter
             max_adv = max_adv_iter
-
 
     return max_adv
 
@@ -271,7 +262,7 @@ class LinfPGDAttack(PGDAttack):
         sparsity = None
         super(LinfPGDAttack, self).__init__(
             predict, loss_fn, eps, nb_iter, eps_iter, rand_init,
-            clip_min, clip_max, ord, targeted,  sparsity)
+            clip_min, clip_max, ord, targeted, sparsity)
 
 
 class L2PGDAttack(PGDAttack):
@@ -433,7 +424,7 @@ class MomentumIterativeAttack(Attack, LabelMixin):
                 delta.data += self.eps_iter * normalize_by_pnorm(g, p=2)
                 delta.data *= clamp(
                     (self.eps * normalize_by_pnorm(delta.data, p=2)
-                        / delta.data),
+                     / delta.data),
                     max=1.)
                 delta.data = clamp(
                     x + delta.data, min=self.clip_min, max=self.clip_max) - x

@@ -1,13 +1,13 @@
-import torch
+import itertools
 import multiprocessing as python_multiprocessing
+import threading
+
+import torch
 import torch.multiprocessing as multiprocessing
+from torch._six import queue, string_classes
+from torch._utils import ExceptionWrapper
 from torch.utils.data import IterableDataset, Sampler, SequentialSampler, RandomSampler, BatchSampler
 from torch.utils.data import _utils
-from torch._utils import ExceptionWrapper
-import threading
-import itertools
-from torch._six import queue, string_classes
-
 
 get_worker_info = _utils.worker.get_worker_info
 
@@ -48,6 +48,7 @@ class _InfiniteConstantSampler(Sampler):
         # `len(dataloader)`, `list(dataloader)` will fail.
         # see NOTE [ Lack of Default `__len__` in Python Abstract Base Classes ]
         raise TypeError('Cannot determine the DataLoader length of a IterableDataset')
+
 
 class DataLoader(object):
     """
@@ -275,7 +276,7 @@ class DataLoader(object):
     def _auto_collation(self):
         if self.shuffle == True:
             return self.batch_sampler_shuffle is not None
-        else :
+        else:
             return self.batch_sampler_sequential is not None
 
     @property
@@ -286,18 +287,17 @@ class DataLoader(object):
         # We can't change `.sampler` and `.batch_sampler` attributes for BC
         # reasons.
         if self._auto_collation:
-            if self.shuffle==True:
+            if self.shuffle == True:
                 return self.batch_sampler_shuffle
-            else :
+            else:
                 return self.batch_sampler_sequential
         elif shuffle == True:
             return self.sampler_shuffle
-        elif shuffle == False :
+        elif shuffle == False:
             return self.sampler_sequential
 
     def __len__(self):
         return len(self._index_sampler)  # with iterable-style dataset, this will error
-
 
 
 class _BaseDataLoaderIter(object):
