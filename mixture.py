@@ -1,4 +1,3 @@
-import numpy as np
 import os
 
 import numpy as np
@@ -400,7 +399,7 @@ class Mixture_of_Classifier(nn.Module):
 
     def test_mixture_accuracy_under_attack(self, adversary="pgd", number_of_models=None, level=0):
 
-        if number_of_models == None:
+        if number_of_models is None:
             number_of_models = self.number_of_models
 
         tmp_classifiers = self.classifiers
@@ -478,7 +477,7 @@ class Mixture_of_Classifier(nn.Module):
             indices = (choosen_ids == i).nonzero()[0]
             batch_of_logit[indices] = self.predict(x, i)[indices]
 
-        if with_choosen_classifier_id == False:
+        if not with_choosen_classifier_id:
             return batch_of_logit
         else:
             return batch_of_logit, choosen_ids
