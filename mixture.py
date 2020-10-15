@@ -21,7 +21,7 @@ from dataset.cifar_dataset import CIFAR10, CIFAR100
 
 
 class Mixture_of_Classifier(nn.Module):
-    '''Mixture_of_classifier
+    """Mixture_of_classifier
 
     Attributes
     ----------
@@ -73,7 +73,7 @@ class Mixture_of_Classifier(nn.Module):
     forward(...)
         give a batch of sample to the mixture and return its ouput
 
-    '''
+    """
 
     def __init__(self, train_loader=None, test_loader=None, device=None, config=None):
         super(Mixture_of_Classifier, self).__init__()
@@ -101,7 +101,7 @@ class Mixture_of_Classifier(nn.Module):
     def load(self, top_accuracy_under_attack=False, level=0):
         print(level * "   " + "Loading models...")
 
-        if top_accuracy_under_attack == True:
+        if top_accuracy_under_attack:
             load_dir = self.save_dir + "/topAccuracyUnderAttack"
         else:
             load_dir = self.save_dir + "/topAccuracy"

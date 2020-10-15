@@ -287,13 +287,13 @@ class DataLoader(object):
         # We can't change `.sampler` and `.batch_sampler` attributes for BC
         # reasons.
         if self._auto_collation:
-            if self.shuffle == True:
+            if self.shuffle:
                 return self.batch_sampler_shuffle
             else:
                 return self.batch_sampler_sequential
-        elif shuffle == True:
+        elif self.shuffle:
             return self.sampler_shuffle
-        elif shuffle == False:
+        elif not self.shuffle:
             return self.sampler_sequential
 
     def __len__(self):

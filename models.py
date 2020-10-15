@@ -190,13 +190,9 @@ def test(model, device, test_loader, level=0):
 
 def test_under_carlini_attack(model, device, test_loader, attacks, level=0):
     model.eval()
-
     threshold = np.array([0.4, 0.6, 0.8])
-
     predictions = torch.zeros(len(threshold), len(attacks), len(test_loader), 2, test_loader.batch_size).cuda()
-
     mixture_output = torch.zeros(len(threshold), len(attacks), len(test_loader), test_loader.batch_size).cuda()
-
     total = 0
 
     for batch_idx, (inputs, targets) in enumerate(test_loader):
@@ -250,11 +246,8 @@ def test_under_attack(model, device, test_loader, attack, adversary='pgd', level
 
     if adversary == 'carlini':
         threshold = np.array([0.4, 0.6, 0.8])
-
         totals = np.zeros(len(threshold))
         corrects = np.zeros(len(threshold))
-
-        results = np.zeros((len(threshold), expectation_iterations))
     elif adversary == 'pgd':
         correct = 0
         total = 0
@@ -296,7 +289,6 @@ def test_under_attack(model, device, test_loader, attack, adversary='pgd', level
                     print(level * "   " + 'Threshold : %.3f%% - Acc: %.3f%% (%.3f/%d)' % (
                         threshold[k], 100. * corrects[k] / totals[k], corrects[k], totals[k]))
 
-
         elif adversary == 'pgd':
             with torch.no_grad():
                 total += targets.size(0)
@@ -318,7 +310,7 @@ def test_under_attack(model, device, test_loader, attack, adversary='pgd', level
 
     elif adversary == 'pgd':
 
-        return (100. * correct / total)
+        return 100. * correct / total
 
 
 # Method to save a classifier with its ntaural accuracy and accuracy under attack
@@ -359,11 +351,12 @@ def save_weights(save_dir, weights, i):
     torch.save(checkpoint, save_dir + "/weights_" + str(i) + '.pth')
 
 
-# Method to load a classifier at a given training epoch or the best one (according to the natural accuracy or the accuracy under attack)
+# Method to load a classifier at a given training epoch or
+# the best one (according to the natural accuracy or the accuracy under attack)
 def load_model(save_dir, i, epoch, device, number_of_class, top_acc_under_attack=True):
     if epoch != -1:
         checkpoint = torch.load(save_dir + "/model_" + str(i) + "/epoch_" + str(epoch) + ".pth")
-    elif top_acc_under_attack == False:
+    elif not top_acc_under_attack:
         checkpoint = torch.load(save_dir + "/topAccuracy/model_" + str(i) + ".pth")
     else:
         checkpoint = torch.load(save_dir + "/topAccuracyUnderAttack/model_" + str(i) + ".pth")

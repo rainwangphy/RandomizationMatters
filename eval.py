@@ -7,6 +7,7 @@ import sys
 
 import torch
 from torchvision import datasets, transforms
+from torch.utils.data import DataLoader as tDataLoader
 
 from dataset.DataLoader import DataLoader
 from dataset.cifar_dataset import CIFAR10, CIFAR100
@@ -30,6 +31,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Loading datasets
 
 config['dataroot'] = config['dataroot'] + "/" + config['dataset']
+
+custom_data_class = CIFAR10
+original_data_class = datasets.CIFAR10
+config['number_of_class'] = 10
 
 if config['dataset'] == 'cifar10':
     custom_data_class = CIFAR10
@@ -55,7 +60,7 @@ train_loader = DataLoader(
     drop_last=True
 )
 
-test_loader = torch.utils.data.DataLoader(
+test_loader = tDataLoader(
     original_data_class(
         root=config['dataroot'],
         train=False,
@@ -80,12 +85,14 @@ level = 0
 
 # Boolean variable that help us to know if we have enough saved classifier to load.
 completeLoading = False
-if config['load'] == True:
+if config['load']:
     completeLoading = MC.load(top_accuracy_under_attack=True, level=level + 1)
 
-if completeLoading == False:
+if not completeLoading:
     sys.exit("Not enough saved classifiers")
 
+
+accuracy = 0
 if config["number_of_models"] > 1:
     if args.adversary == 'pgd':
         accuracy = MC.test_mixture_accuracy_under_attack(adversary='pgd', level=level + 1)
@@ -101,6 +108,7 @@ if not os.path.isdir(MC.save_dir + "/eval/" + str(config['alpha'])):
     os.mkdir(MC.save_dir + "/eval/" + str(config['alpha']))
 
 save_dir = MC.save_dir + "/eval/" + str(config['alpha'])
+
 # Saving the results
 if args.adversary == 'pgd':
     torch.save(accuracy, save_dir + "/" + args.adversary + ".pth")

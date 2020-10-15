@@ -4,6 +4,7 @@ import json
 
 import torch
 from torchvision import datasets, transforms
+from torch.utils.data import DataLoader as tDataLoader
 
 from dataset.DataLoader import DataLoader
 from dataset.cifar_dataset import CIFAR10, CIFAR100
@@ -22,13 +23,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 config['dataroot'] = config['dataroot'] + "/" + config['dataset']
 
+custom_data_class = CIFAR10
+original_data_class = datasets.CIFAR10
+
 if config['dataset'] == 'cifar10':
     custom_data_class = CIFAR10
     original_data_class = datasets.CIFAR10
     config['number_of_class'] = 10
 
 elif config['dataset'] == 'cifar100':
-
     custom_data_class = CIFAR100
     original_data_class = datasets.CIFAR100
     config['number_of_class'] = 100
@@ -48,7 +51,7 @@ train_loader = DataLoader(
     drop_last=True
 )
 
-test_loader = torch.utils.data.DataLoader(
+test_loader = tDataLoader(
     original_data_class(
         root=config['dataroot'],
         train=False,
@@ -60,6 +63,7 @@ test_loader = torch.utils.data.DataLoader(
     num_workers=2,
     drop_last=True
 )
+
 
 # Build the mixture class
 
