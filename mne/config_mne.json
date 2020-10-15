@@ -3,7 +3,7 @@
   "dataset": "cifar10",
   "number_of_class": 10,
   "dataroot": "./data",
-  "save_dir": "./bat/save",
+  "save_dir": "./mne/save",
   "number_of_models": 2,
   "load": true,
   "method": "boosting",

@@ -388,9 +388,9 @@ def updateAndSaveBestAccuracies(save_dir, i, device, model, accuracy, accuracy_u
     if not os.path.isdir(save_dir + '/topAccuracyUnderAttack'):
         os.mkdir(save_dir + '/topAccuracyUnderAttack')
 
-    if acc == True:
+    if acc:
         save_model(save_dir + '/topAccuracy', i, device, model, accuracy, accuracy_under_attack, -1, level=level)
 
-    if acc_under_attack == True:
+    if acc_under_attack:
         save_model(save_dir + '/topAccuracyUnderAttack', i, device, model, accuracy, accuracy_under_attack, -1,
                    level=level)

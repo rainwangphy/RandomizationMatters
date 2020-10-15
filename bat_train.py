@@ -11,7 +11,7 @@ from dataset.DataLoader import DataLoader
 from dataset.cifar_dataset import CIFAR10, CIFAR100
 
 # get the config file for default values
-with open('config.json') as config_file:
+with open('bat/config.json') as config_file:
     config = json.load(config_file)
 
 config['save_dir'] = config['save_dir']
