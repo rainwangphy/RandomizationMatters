@@ -10,11 +10,11 @@ from advertorch.attacks.iterative_projected_gradient import LinfPGDAttack
 from torch.optim import lr_scheduler
 from torchvision import transforms
 
-import models
 from attacks.carlini_eot_logit import CarliniAttackEotLogit
 from attacks.carlini_eot_loss import CarliniAttackEotLoss
 from attacks.carlini_eot_probit import CarliniAttackEotProbit
 from attacks.iterative_projected_gradient import LinfPGDAttack as LINFPGD
+from bat import models
 from dataset.DataLoader import DataLoader
 # Dataset
 from dataset.cifar_dataset import CIFAR10, CIFAR100
@@ -41,7 +41,7 @@ class Mixture_of_Classifier(nn.Module):
         Load the classifiers available
 
     boosting(...)
-        Method that apply the BAT algorithm
+        Method that apply the bat algorithm
 
     addBoostedClassifier(...)
         Method called in boosting(...) to create the new classifier
@@ -163,9 +163,9 @@ class Mixture_of_Classifier(nn.Module):
 
         return True
 
-    # BAT algorithm
+    # bat algorithm
     def boosting(self, level=0):
-        print(level * "   " + "Starting BAT algorithm...")
+        print(level * "   " + "Starting bat algorithm...")
 
         if self.resume_epoch != -1:
             start = len(self.classifiers) - 1
