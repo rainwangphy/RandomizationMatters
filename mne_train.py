@@ -60,4 +60,3 @@ test_loader = tDataLoader(
     num_workers=2,
     drop_last=True
 )
-

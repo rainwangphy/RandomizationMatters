@@ -1,7 +1,3 @@
-import compact.evaluate
-import compact.visual_visdom
-
-
 #########################################################
 ## Callback-functions for evaluating model-performance ##
 #########################################################

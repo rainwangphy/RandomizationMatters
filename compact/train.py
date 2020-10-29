@@ -140,7 +140,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="class", classe
             else:
                 x, y = next(data_loader)  # --> sample training data of current task
                 y = y - classes_per_task * (
-                            task - 1) if scenario == "task" else y  # --> ITL: adjust y-targets to 'active range'
+                        task - 1) if scenario == "task" else y  # --> ITL: adjust y-targets to 'active range'
                 x, y = x.to(device), y.to(device)  # --> transfer them to correct device
                 # If --bce, --bce-distill & scenario=="class", calculate scores of current batch with previous model
                 binary_distillation = hasattr(model, "binaryCE") and model.binaryCE and model.binaryCE_distill

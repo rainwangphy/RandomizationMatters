@@ -213,7 +213,7 @@ class AutoEncoder(Replayer):
             variatL = torch.mean(variatL)  # -> average over batch
             if self.average:
                 variatL /= (
-                            self.image_channels * self.image_size ** 2)  # -> divide by # of input-pixels, if [self.average]
+                        self.image_channels * self.image_size ** 2)  # -> divide by # of input-pixels, if [self.average]
         else:
             variatL = torch.tensor(0., device=self._device())
 

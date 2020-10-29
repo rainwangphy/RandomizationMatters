@@ -41,7 +41,6 @@ loss_params = parser.add_argument_group('Loss Parameters')
 loss_params.add_argument('--bce', action='store_true', help="use binary (instead of multi-class) classication loss")
 loss_params.add_argument('--bce-distill', action='store_true', help='distilled loss on previous classes for new'
                                                                     ' examples (only if --bce & --scenario="class")')
-
 # model architecture parameters
 model_params = parser.add_argument_group('Model Parameters')
 model_params.add_argument('--fc-layers', type=int, default=3, dest='fc_lay', help="# of fully-connected layers")
@@ -51,7 +50,6 @@ model_params.add_argument('--fc-bn', type=str, default="no", help="use batch-nor
 model_params.add_argument('--fc-nl', type=str, default="relu", choices=["relu", "leakyrelu"])
 model_params.add_argument('--singlehead', action='store_true', help="for Task-IL: use a 'single-headed' output layer   "
                                                                     " (instead of a 'multi-headed' one)")
-
 # training hyperparameters / initialization
 train_params = parser.add_argument_group('Training Parameters')
 train_params.add_argument('--iters', type=int, help="# batches to optimize solver")
@@ -81,7 +79,8 @@ gen_params.add_argument('--lr-gen', type=float, help="learning rate generator (d
 # "memory allocation" parameters
 cl_params = parser.add_argument_group('Memory Allocation Parameters')
 cl_params.add_argument('--ewc', action='store_false', help="use 'EWC' (Kirkpatrick et al, 2017)")
-cl_params.add_argument('--lambda', type=float, default=10000000, dest="ewc_lambda", help="--> EWC: regularisation strength")
+cl_params.add_argument('--lambda', type=float, default=10000000, dest="ewc_lambda",
+                       help="--> EWC: regularisation strength")
 cl_params.add_argument('--fisher-n', type=int, help="--> EWC: sample size estimating Fisher Information")
 cl_params.add_argument('--online', action='store_true', help="--> EWC: perform 'online EWC'")
 cl_params.add_argument('--gamma', type=float, help="--> EWC: forgetting coefficient (for 'online EWC')")
@@ -185,7 +184,6 @@ def run(args, verbose=False):
     torch.manual_seed(args.seed)
     if cuda:
         torch.cuda.manual_seed(args.seed)
-
     # -------------------------------------------------------------------------------------------------#
 
     # ----------------#
@@ -482,7 +480,8 @@ def run(args, verbose=False):
                 'NA' for _ in range(args.tasks)
             ]
             R = R.reindex(['at start'] + ['after task {}'.format(i + 1) for i in range(args.tasks)])
-            BWTs = [(R.loc['after task {}'.format(args.tasks), 'task {}'.format(i + 1)] - R.loc['after task {}'.format(i + 1), 'task {}'.format(i + 1)]) for i in range(args.tasks - 1)]
+            BWTs = [(R.loc['after task {}'.format(args.tasks), 'task {}'.format(i + 1)] - R.loc[
+                'after task {}'.format(i + 1), 'task {}'.format(i + 1)]) for i in range(args.tasks - 1)]
             FWTs = [0. if args.use_exemplars else (
                     R.loc['after task {}'.format(i + 1), 'task {}'.format(i + 2)] - R.loc[
                 'at start', 'task {}'.format(i + 2)]

@@ -4,11 +4,10 @@ and creates adversarial examples using the Fast Gradient Sign Method. Here we us
 it would also be possible to provide a pretrained model to the ART classifier.
 The parameters are chosen for reduced computational requirements of the script and not optimised for accuracy.
 """
+import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import numpy as np
-
 from art.attacks.evasion import FastGradientMethod, ProjectedGradientDescentPyTorch
 from art.estimators.classification import PyTorchClassifier
 from art.utils import load_mnist
@@ -85,7 +84,6 @@ x_test_adv = attack.generate(x=x_test)
 predictions = classifier.predict(x_test_adv)
 accuracy = np.sum(np.argmax(predictions, axis=1) == np.argmax(y_test, axis=1)) / len(y_test)
 print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))
-
 
 # Step 6: Generate adversarial test examples
 attack = FastGradientMethod(estimator=classifier, eps=0.2)
