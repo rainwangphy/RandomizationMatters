@@ -34,14 +34,14 @@ def _sample_cb(log, config, visdom=None, test_datasets=None, sample_size=64, ite
 
 def _eval_cb(log, test_datasets, visdom=None, iters_per_task=None, test_size=None, classes_per_task=None,
              scenario="class", summary_graph=True, with_exemplars=False):
-    '''Initiates function for evaluating performance of classifier (in terms of precision).
+    """Initiates function for evaluating performance of classifier (in terms of precision).
 
     [test_datasets]     <list> of <Datasets>; also if only 1 task, it should be presented as a list!
     [classes_per_task]  <int> number of "active" classes per task
-    [scenario]          <str> how to decide which classes to include during evaluating precision'''
+    [scenario]          <str> how to decide which classes to include during evaluating precision"""
 
     def eval_cb(classifier, batch, task=1):
-        '''Callback-function, to evaluate performance of classifier.'''
+        """Callback-function, to evaluate performance of classifier."""
 
         iteration = batch if task == 1 else (task - 1) * iters_per_task + batch
 

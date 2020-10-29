@@ -7,10 +7,10 @@ from torchvision import datasets, transforms
 
 
 def _permutate_image_pixels(image, permutation):
-    '''Permutate the pixels of an image according to [permutation].
+    """Permutate the pixels of an image according to [permutation].
 
     [image]         3D-tensor containing the image
-    [permutation]   <ndarray> of pixel-indeces in their new order'''
+    [permutation]   <ndarray> of pixel-indeces in their new order"""
 
     if permutation is None:
         return image
@@ -55,10 +55,10 @@ def get_dataset(name, type='train', download=True, capacity=None, permutation=No
 
 
 class SubDataset(Dataset):
-    '''To sub-sample a dataset, taking only those samples with label in [sub_labels].
+    """To sub-sample a dataset, taking only those samples with label in [sub_labels].
 
     After this selection of samples has been made, it is possible to transform the target-labels,
-    which can be useful when doing continual learning with fixed number of output units.'''
+    which can be useful when doing continual learning with fixed number of output units."""
 
     def __init__(self, original_dataset, sub_labels, target_transform=None):
         super().__init__()
@@ -88,9 +88,9 @@ class SubDataset(Dataset):
 
 
 class ExemplarDataset(Dataset):
-    '''Create dataset from list of <np.arrays> with shape (N, C, H, W) (i.e., with N images each).
+    """Create dataset from list of <np.arrays> with shape (N, C, H, W) (i.e., with N images each).
 
-    The images at the i-th entry of [exemplar_sets] belong to class [i], unless a [target_transform] is specified'''
+    The images at the i-th entry of [exemplar_sets] belong to class [i], unless a [target_transform] is specified"""
 
     def __init__(self, exemplar_sets, target_transform=None):
         super().__init__()

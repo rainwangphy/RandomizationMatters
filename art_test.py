@@ -85,12 +85,12 @@ predictions = classifier.predict(x_test_adv)
 accuracy = np.sum(np.argmax(predictions, axis=1) == np.argmax(y_test, axis=1)) / len(y_test)
 print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))
 
-# Step 6: Generate adversarial test examples
-attack = FastGradientMethod(estimator=classifier, eps=0.2)
-x_test_adv = attack.generate(x=x_test)
-
-# Step 7: Evaluate the ART classifier on adversarial test examples
-
-predictions = classifier.predict(x_test_adv)
-accuracy = np.sum(np.argmax(predictions, axis=1) == np.argmax(y_test, axis=1)) / len(y_test)
-print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))
+# # Step 6: Generate adversarial test examples
+# attack = FastGradientMethod(estimator=classifier, eps=0.2)
+# x_test_adv = attack.generate(x=x_test)
+#
+# # Step 7: Evaluate the ART classifier on adversarial test examples
+#
+# predictions = classifier.predict(x_test_adv)
+# accuracy = np.sum(np.argmax(predictions, axis=1) == np.argmax(y_test, axis=1)) / len(y_test)
+# print("Accuracy on adversarial test examples: {}%".format(accuracy * 100))

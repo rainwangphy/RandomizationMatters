@@ -65,7 +65,7 @@ class Classifier(ContinualLearner, Replayer, ExemplarHandler):
         return self.fcE(self.flatten(images))
 
     def train_a_batch(self, x, y, scores=None, x_=None, y_=None, scores_=None, rnt=0.5, active_classes=None, task=1):
-        '''Train model for one batch ([x],[y]), possibly supplemented with replayed data ([x_],[y_/scores_]).
+        """Train model for one batch ([x],[y]), possibly supplemented with replayed data ([x_],[y_/scores_]).
 
         [x]               <tensor> batch of inputs (could be None, in which case only 'replayed' data is used)
         [y]               <tensor> batch of corresponding labels
@@ -76,7 +76,7 @@ class Classifier(ContinualLearner, Replayer, ExemplarHandler):
         [scores_]         None or (<list> of) <tensor> 2Dtensor:[batch]x[classes] predicted "scores"/"logits" for [x_]
         [rnt]             <number> in [0,1], relative importance of new task
         [active_classes]  None or (<list> of) <list> with "active" classes
-        [task]            <int>, for setting task-specific mask'''
+        [task]            <int>, for setting task-specific mask"""
 
         # Set model to training-mode
         self.train()

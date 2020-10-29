@@ -1,36 +1,6 @@
-# Randomization matters How to defend against strong adversarial attacks
+## Mixed Nash Equilibrium is All You Need in Adversarial Training
 
-Code of the ICML paper : Randomization matters How to defend against strong adversarial attacks. Rafael Pinot, Raphael Ettedgui, Geovani Rizk, Yann Chevaleyre, Jamal Atif.
 
-## Dependencies
-
-Use the requirements.txt file
-
-```
-pip install -r requirements.txt
-```
-
-## Run
-
-All the hyperparameters are in the config.json file.
-
-To train a mixture
-
-```
-python train.py
-```
-
-To eval the mixture
-
-```
-python eval.py --adversary=[ADVERSARY] --alpha=[ALPHA]
-```
-
-Example : 
-
-```
-python eval.py --adversary=pgd --alpha=0.2
-```
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+1. Apply double-oracle method to the adversarial training
+2. Apply PGD attack to efficiently attack multiple classifiers
+3. Apply continual learning to restrict the size of the neural networks
