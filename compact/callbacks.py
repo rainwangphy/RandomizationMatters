@@ -2,6 +2,10 @@
 ## Callback-functions for evaluating model-performance ##
 #########################################################
 
+import compact.evaluate as evaluate
+import compact.visual_visdom as visual_visdom
+
+
 def _sample_cb(log, config, visdom=None, test_datasets=None, sample_size=64, iters_per_task=None):
     '''Initiates function for evaluating samples of generative model.
 
