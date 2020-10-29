@@ -15,10 +15,10 @@ import compact.visual_visdom as visual_visdom
 
 def validate(model, dataset, batch_size=128, test_size=1024, verbose=True, allowed_classes=None,
              with_exemplars=False, no_task_mask=False, task=None):
-    '''Evaluate precision (= accuracy or proportion correct) of a classifier ([model]) on [dataset].
+    """Evaluate precision (= accuracy or proportion correct) of a classifier ([model]) on [dataset].
 
     [allowed_classes]   None or <list> containing all "active classes" between which should be chosen
-                            (these "active classes" are assumed to be contiguous)'''
+                            (these "active classes" are assumed to be contiguous)"""
 
     # Set model to eval()-mode
     mode = model.training
@@ -65,11 +65,11 @@ def validate(model, dataset, batch_size=128, test_size=1024, verbose=True, allow
 
 def precision(model, datasets, current_task, iteration, classes_per_task=None, scenario="domain",
               test_size=None, visdom=None, verbose=False, summary_graph=True, with_exemplars=False, no_task_mask=False):
-    '''Evaluate precision of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
+    """Evaluate precision of a classifier (=[model]) on all tasks so far (= up to [current_task]) using [datasets].
 
     [classes_per_task]  <int> number of active classes er task
     [scenario]          <str> how to decide which classes to include during evaluating precision
-    [visdom]            None or <dict> with name of "graph" and "env" (if None, no visdom-plots are made)'''
+    [visdom]            None or <dict> with name of "graph" and "env" (if None, no visdom-plots are made)"""
 
     n_tasks = len(datasets)
 
