@@ -97,7 +97,7 @@ class CarliniAttackEotLoss(Attack, LabelMixin):
             loss1 = clamp(other - real + self.confidence, min=0.)
         else:
             loss1 = clamp(real - other + self.confidence, min=0.)
-        loss2 = (l2distsq).sum()
+        loss2 = l2distsq.sum()
         loss1 = torch.sum(const * loss1)
         loss = loss1 + loss2
         return loss

@@ -46,9 +46,9 @@ class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
     # ----------------- XdG-specifc functions -----------------#
 
     def apply_XdGmask(self, task):
-        '''Apply task-specific mask, by setting activity of pre-selected subset of nodes to zero.
+        """Apply task-specific mask, by setting activity of pre-selected subset of nodes to zero.
 
-        [task]   <int>, starting from 1'''
+        [task]   <int>, starting from 1"""
 
         assert self.mask_dict is not None
         torchType = next(self.parameters()).detach()

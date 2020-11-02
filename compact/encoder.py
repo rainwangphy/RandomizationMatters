@@ -47,11 +47,11 @@ class Classifier(ContinualLearner, Replayer, ExemplarHandler):
         self.classifier = fc_layer(mlp_output_size, classes, excit_buffer=True, nl='none', drop=fc_drop)
 
     def list_init_layers(self):
-        '''Return list of modules whose parameters could be initialized differently (i.e., conv- or fc-layers).'''
-        list = []
-        list += self.fcE.list_init_layers()
-        list += self.classifier.list_init_layers()
-        return list
+        """Return list of modules whose parameters could be initialized differently (i.e., conv- or fc-layers)."""
+        paras_list = []
+        paras_list += self.fcE.list_init_layers()
+        paras_list += self.classifier.list_init_layers()
+        return paras_list
 
     @property
     def name(self):

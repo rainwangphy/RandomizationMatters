@@ -274,7 +274,7 @@ class DataLoader(object):
 
     @property
     def _auto_collation(self):
-        if self.shuffle == True:
+        if self.shuffle:
             return self.batch_sampler_shuffle is not None
         else:
             return self.batch_sampler_sequential is not None
