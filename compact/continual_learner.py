@@ -60,7 +60,7 @@ class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
             excit_buffer.set_(torchType.new(gating_mask))  # -> apply this mask
 
     def reset_XdGmask(self):
-        '''Remove task-specific mask, by setting all "excit-buffers" to 1.'''
+        """Remove task-specific mask, by setting all "excit-buffers" to 1."""
         torchType = next(self.parameters()).detach()
         for excit_buffer in self.excit_buffer_list:
             gating_mask = np.repeat(1., len(excit_buffer))  # -> define "unit mask" (i.e., no masking at all)
@@ -69,10 +69,10 @@ class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
     # ----------------- EWC-specifc functions -----------------#
 
     def estimate_fisher(self, dataset, allowed_classes=None, collate_fn=None):
-        '''After completing training on a task, estimate diagonal of Fisher Information matrix.
+        """After completing training on a task, estimate diagonal of Fisher Information matrix.
 
         [dataset]:          <DataSet> to be used to estimate FI-matrix
-        [allowed_classes]:  <list> with class-indeces of 'allowed' or 'active' classes'''
+        [allowed_classes]:  <list> with class-indeces of 'allowed' or 'active' classes"""
 
         # Prepare <dict> to store estimated Fisher Information matrix
         est_fisher_info = {}

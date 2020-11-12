@@ -19,7 +19,10 @@ def perturb_iterative(xvar, yvar,
     iterative attacks including IterativeGradientSign, LinfPGD, etc.
     :param xvar: input data.
     :param yvar: input labels.
-    :param predict: forward pass function.
+
+    :param predictor_list: forward pass function.
+    :param dis_list: distribution over predictors
+    
     :param nb_iter: number of iterations.
     :param eps: maximum distortion.
     :param eps_iter: attack step size.
@@ -37,7 +40,7 @@ def perturb_iterative(xvar, yvar,
     else:
         delta = torch.zeros_like(xvar)
     delta.requires_grad_()
-    max_loss_value_iter = -100000
+    max_loss_value_iter = -np.inf
     max_adv_iter = torch.zeros_like(xvar)
     for ii in range(nb_iter):
         avg_grad = torch.tensor(xvar.shape).float()
@@ -174,5 +177,4 @@ class AveragedPGDAttack:
             if max_loss < adv_loss:
                 max_loss = adv_loss
                 max_adv_x = adv_x
-
         return max_adv_x.data
