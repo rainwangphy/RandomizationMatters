@@ -1,14 +1,7 @@
-import torch
+import torch.cuda
 import torch.nn as nn
 import numpy as np
-
-a = torch.zeros([2, 4, 5])
-a = nn.Parameter(a)
-print(a)
-
-a = -np.inf
-
-if 3 > a:
-    a = 3
-    print(a)
-    print("True")
+print(torch.cuda.device_count())
+print(torch.cuda.get_device_name(3))
+# print(torch.cuda.)
+print(torch.cuda.is_available())

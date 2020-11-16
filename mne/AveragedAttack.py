@@ -32,6 +32,7 @@ def perturb_iterative(xvar, yvar,
     :param ord: (optional) the order of maximum distortion (inf or 2).
     :param clip_min: mininum value per input dimension.
     :param clip_max: maximum value per input dimension.
+    :param sparsity: the sparsity
 
     :return: tensor containing the perturbed input.
     """
@@ -47,16 +48,12 @@ def perturb_iterative(xvar, yvar,
         avg_grad.zero_()
         # if xvar.is_cuda:
         #     avg_grad = avg_grad.cuda()
-        p = []
+        # p = []
         loss = torch.tensor(0.)
-        for predict in predictor_list:
-            p.append(predict.weights / np.sum(predict.weights))
+        # for predict in predictor_list:
+        #     p.append(predict.weights / np.sum(predict.weights))
         for i in range(len(predictor_list)):
-            for id_classifier, classifier in enumerate(predictor_list[i].classifiers):
-                if id_classifier == 0:
-                    outputs = classifier(xvar + delta) * p[id_classifier]
-                else:
-                    outputs = outputs + classifier(xvar + delta) * p[id_classifier]
+            outputs = predictor_list[i](xvar + delta)
             loss = loss + loss_fn(outputs, yvar) * dis_list[i]
         if minimize:
             loss = -loss
@@ -110,17 +107,12 @@ def perturb_iterative(xvar, yvar,
 
         loss_2 = torch.tensor(0)
         for i in range(len(predictor_list)):
-            for id_classifier, classifier in enumerate(predictor_list[i].classifiers):
-                if id_classifier == 0:
-                    outputs_2 = classifier(xvar + delta) * p[i][id_classifier]
-                else:
-                    outputs_2 = outputs_2 + classifier(xvar + delta) * p[i][id_classifier]
+            outputs_2 = predictor_list[i](xvar + delta)
+            loss_2 = loss_2 + loss_fn(outputs_2, yvar) * dis_list[i]
 
-            loss_2 = loss_2 + loss_fn(outputs_2, yvar)
-
-            if max_loss_value_iter < loss_2:
-                max_loss_value_iter = loss_2
-                max_adv_iter = x_adv
+        if max_loss_value_iter < loss_2:
+            max_loss_value_iter = loss_2
+            max_adv_iter = x_adv
 
     return max_adv_iter, max_loss_value_iter
 
