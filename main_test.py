@@ -14,4 +14,3 @@ flops, params = thop.profile(Classifier,
                              inputs=(input,))
 
 print(Classifier.layer1[0])
-
