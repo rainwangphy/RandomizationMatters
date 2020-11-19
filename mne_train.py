@@ -14,7 +14,7 @@ from dataset.cifar_dataset import CIFAR10, CIFAR100
 from bat import models
 from mne import AveragedAttack
 
-
+import thop
 
 # get the config file for default values
 with open('mne/config_mne.json') as config_file:
@@ -89,11 +89,15 @@ with torch.cuda.device(2):
     #
     # print(attack)
     # # torch.cuda.set_device(1)
-    # for batch_idx, (inputs, targets) in enumerate(train_loader):
-    #     inputs, targets = inputs.to(device), targets.to(device)
-    #
-    #     print(Classifier_1(inputs))
-    #     print(type(inputs))
-    #     inputs = attack.perturb(inputs, targets)
-    #     print(type(inputs))
-    #     break
+    for batch_idx, (inputs, targets) in enumerate(train_loader):
+        inputs, targets = inputs.to(device), targets.to(device)
+        print(inputs.size())
+        flops, paras = thop.profile(Classifier_1, inputs=(inputs,))
+        print(flops / 128)
+        print(paras)
+        # print(Classifier_1(inputs))
+        #
+        # print(type(inputs))
+        # # inputs = attack.perturb(inputs, targets)
+        # print(type(inputs))
+        break

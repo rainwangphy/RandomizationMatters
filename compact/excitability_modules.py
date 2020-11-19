@@ -66,7 +66,7 @@ class LinearExcitability(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        '''Modifies the parameters "in-place" to initialize / reset them at appropriate values.'''
+        """Modifies the parameters "in-place" to initialize / reset them at appropriate values."""
         stdv = 1. / math.sqrt(self.weight.size(1))
         self.weight.data.uniform_(-stdv, stdv)
         if self.excitability is not None:
@@ -75,9 +75,9 @@ class LinearExcitability(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input):
-        '''Running this model's forward step requires/returns:
+        """Running this model's forward step requires/returns:
             -[input]:   [batch_size]x[...]x[in_features]
-            -[output]:  [batch_size]x[...]x[hidden_features]'''
+            -[output]:  [batch_size]x[...]x[hidden_features]"""
         if self.excit_buffer is None:
             excitability = self.excitability
         elif self.excitability is None:

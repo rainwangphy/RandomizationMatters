@@ -67,7 +67,7 @@ class AutoEncoder(Replayer):
         return "{}({}{}{}-c{})".format(self.label, fc_label, hid_label, z_label, self.classes)
 
     def list_init_layers(self):
-        '''Return list of modules whose parameters could be initialized differently (i.e., conv- or fc-layers).'''
+        """Return list of modules whose parameters could be initialized differently (i.e., conv- or fc-layers)."""
         list = []
         list += self.fcE.list_init_layers()
         list += self.toZ.list_init_layers()

@@ -15,7 +15,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="class", classe
              batch_size=32,
              generator=None, gen_iters=0, gen_loss_cbs=list(), loss_cbs=list(), eval_cbs=list(), sample_cbs=list(),
              use_exemplars=True, add_exemplars=False, metric_cbs=list()):
-    '''Train a model (with a "train_a_batch" method) on multiple tasks, with replay-strategy specified by [replay_mode].
+    """Train a model (with a "train_a_batch" method) on multiple tasks, with replay-strategy specified by [replay_mode].
 
     [model]             <nn.Module> main model to optimize across all tasks
     [train_datasets]    <list> with for each task the training <DataSet>
@@ -24,7 +24,7 @@ def train_cl(model, train_datasets, replay_mode="none", scenario="class", classe
     [classes_per_task]  <int>, # of classes per task
     [iters]             <int>, # of optimization-steps (i.e., # of batches) per task
     [generator]         None or <nn.Module>, if a seperate generative model should be trained (for [gen_iters] per task)
-    [*_cbs]             <list> of call-back functions to evaluate training-progress'''
+    [*_cbs]             <list> of call-back functions to evaluate training-progress"""
 
     # Set model in training-mode
     model.train()

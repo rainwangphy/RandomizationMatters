@@ -9,10 +9,10 @@ import compact.utils as utils
 
 
 class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
-    '''Abstract module to add continual learning capabilities to a classifier.
+    """Abstract module to add continual learning capabilities to a classifier.
 
     Adds methods for "context-dependent gating" (XdG), "elastic weight consolidation" (EWC) and
-    "synaptic intelligence" (SI) to its subclasses.'''
+    "synaptic intelligence" (SI) to its subclasses."""
 
     def __init__(self):
         super().__init__()
@@ -146,7 +146,7 @@ class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
         self.train(mode=mode)
 
     def ewc_loss(self):
-        '''Calculate EWC-loss.'''
+        """Calculate EWC-loss."""
         if self.EWC_task_count > 0:
             losses = []
             # If "offline EWC", loop over all previous tasks (if "online EWC", [EWC_task_count]=1 so only 1 iteration)
@@ -170,10 +170,10 @@ class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
     # ------------- "Synaptic Intelligence Synapses"-specifc functions -------------#
 
     def update_omega(self, W, epsilon):
-        '''After completing training on a task, update the per-parameter regularization strength.
+        """After completing training on a task, update the per-parameter regularization strength.
 
         [W]         <dict> estimated parameter-specific contribution to changes in total loss of completed task
-        [epsilon]   <float> dampening parameter (to bound [omega] when [p_change] goes to 0)'''
+        [epsilon]   <float> dampening parameter (to bound [omega] when [p_change] goes to 0)"""
 
         # Loop over all parameters
         for n, p in self.named_parameters():
@@ -196,7 +196,7 @@ class ContinualLearner(nn.Module, metaclass=abc.ABCMeta):
                 self.register_buffer('{}_SI_omega'.format(n), omega_new)
 
     def surrogate_loss(self):
-        '''Calculate SI's surrogate loss.'''
+        """Calculate SI's surrogate loss."""
         try:
             losses = []
             for n, p in self.named_parameters():

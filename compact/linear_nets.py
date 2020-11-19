@@ -101,7 +101,7 @@ class MLP(nn.Module):
         if size_per_layer is None:
             hidden_sizes = []
             if layers > 1:
-                if (hid_smooth is not None):
+                if hid_smooth is not None:
                     hidden_sizes = [int(x) for x in np.linspace(hid_size, hid_smooth, num=layers - 1)]
                 else:
                     hidden_sizes = [int(x) for x in np.repeat(hid_size, layers - 1)]
