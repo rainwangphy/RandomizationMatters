@@ -1,8 +1,8 @@
+import numpy as np
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
-
-import numpy as np
 
 
 # The methods conv3x3, conv_init, wide_basic and the class Wide_Resnet
@@ -52,9 +52,16 @@ class xdg_wide_basic(nn.Module):
             # This dropout procedure does not appear in other implementation,
             # here, we instead use a mask to replace the dropout
             # out = self.dropout(out)
-
+            mask_tensor = torch.ones_like(out, requires_grad=False)
+            for i in range(len(mask[0])):
+                mask_tensor[:, i, :, :] = torch.tensor(mask[0][i])
+            out = mask_tensor * out
             out = self.conv2(F.leaky_relu(self.bn2(out), negative_slope=0.1))
             out += self.shortcut(x)
+            mask_tensor = torch.ones_like(out, requires_grad=False)
+            for i in range(len(mask[1])):
+                mask_tensor[:, i, :, :] = torch.tensor(mask[1][i])
+            out = mask_tensor * out
 
         return out
 
@@ -67,7 +74,8 @@ class XdG_Wide_ResNet(nn.Module):
         self.best_acc = -1
         self.best_accuracy_under_attack = -1
 
-        self.mask_list = []
+        self.mask_channel_list = []
+        self.freeze_channel_list = []
 
         assert ((depth - 4) % 6 == 0), 'Wide-resnet depth should be 6n+4'
         self.n = (depth - 4) // 6
@@ -77,12 +85,9 @@ class XdG_Wide_ResNet(nn.Module):
         self.dropout_rate = dropout_rate
 
         self.conv1 = conv3x3(3, self.nStages[0])
-        self.layer1, output1, stride_number1 = self._wide_layer(xdg_wide_basic, self.nStages[1], self.n, dropout_rate,
-                                                                stride=1)
-        self.layer2, output2, stride_number2 = self._wide_layer(xdg_wide_basic, self.nStages[2], self.n, dropout_rate,
-                                                                stride=2)
-        self.layer3, output3, stride_number3 = self._wide_layer(xdg_wide_basic, self.nStages[3], self.n, dropout_rate,
-                                                                stride=2)
+        self.layer1, output1 = self._wide_layer(xdg_wide_basic, self.nStages[1], self.n, dropout_rate, stride=1)
+        self.layer2, output2 = self._wide_layer(xdg_wide_basic, self.nStages[2], self.n, dropout_rate, stride=2)
+        self.layer3, output3 = self._wide_layer(xdg_wide_basic, self.nStages[3], self.n, dropout_rate, stride=2)
         self.bn1 = nn.BatchNorm2d(self.nStages[3], momentum=0.9)
         self.linear = nn.Linear(self.nStages[3], num_classes)
 
@@ -93,13 +98,28 @@ class XdG_Wide_ResNet(nn.Module):
             'layer3': output3
         }
 
-        self.layer1_stride = stride_number1
-        self.layer2_stride = stride_number2
-        self.layer3_stride = stride_number3
+    def freeze_channel(self):
+        freeze_channel_dict = {}
+        self.freeze_channel_list.append(freeze_channel_dict)
 
-    # generate the mask list for each task, i.e., XdG
-    def gen_mask_list(self):
-        self.mask_list.append(1)
+    # TODO: generate the mask for each layer and each task, i.e., XdG
+    def gen_mask_list(self, mask_rate=0.8):
+        mask_dict = {}
+
+        mask_dict['conv1'] = [(1.0 if torch.rand(1) > mask_rate else 0) for i in
+                              range(self.activation_list.get('conv1'))]
+        # for stride in self.activation_list['layer1']:
+        for i in range(3):
+            layer = {}
+            for j, block in enumerate(self.activation_list['layer%d' % (i + 1)]):
+                layer_list = []
+                for k in range(len(block)):
+                    mask = [(1.0 if torch.rand(1) > mask_rate else 0) for i in range(block[k])]
+                    layer_list.append(mask)
+                layer['block%d' % j] = layer_list
+            mask_dict['layer%d' % (i + 1)] = layer
+
+        self.mask_channel_list.append(mask_dict)
 
     def _wide_layer(self, block, planes, num_blocks, dropout_rate, stride):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -111,39 +131,34 @@ class XdG_Wide_ResNet(nn.Module):
             output_number.append([planes, planes])
             self.in_planes = planes
 
-        return nn.Sequential(*layers), output_number, len(strides)
+        return nn.Sequential(*layers), output_number
 
     def forward(self, x, mask=None):
         out = self.conv1(x)
-        # out should be timed by the mask
-        # for block in self.layer1:
-        #     out = block(out)
-        # for block in self.layer2:
-        #     out = block(out)
-        # for block in self.layer3:
-        #     out = block(out)
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
+
+        if mask is None:
+            out = self.layer1(out)
+            out = self.layer2(out)
+            out = self.layer3(out)
+
+        else:
+            # out should be timed by the mask
+            mask_tensor = torch.ones_like(out, requires_grad=False)
+            for i in range(len(mask['conv1'])):
+                mask_tensor[:, i, :, :] = torch.tensor(mask['conv1'][i])
+            out = mask_tensor * out
+            for i in range(len(self.layer1)):
+                out = self.layer1[i](out, mask['layer1']['block%d' % i])
+            for i in range(len(self.layer2)):
+                out = self.layer2[i](out, mask['layer2']['block%d' % i])
+            for i in range(len(self.layer3)):
+                out = self.layer3[i](out, mask['layer3']['block%d' % i])
+
         out = F.leaky_relu(self.bn1(out), negative_slope=0.1)
         out = F.avg_pool2d(out, 8)
         out = out.view(out.size(0), -1)
         out = self.linear(out)
 
-        return out
-
-    def layerwise_forward(self, x, mask=None):
-        out = self.conv1(x)
-        for i in range(self.layer1_stride):
-            out = self.layer1[i](out)
-        for i in range(self.layer2_stride):
-            out = self.layer2[i](out)
-        for i in range(self.layer3_stride):
-            out = self.layer3[i](out)
-        out = F.leaky_relu(self.bn1(out), negative_slope=0.1)
-        out = F.avg_pool2d(out, 8)
-        out = out.view(out.size(0), -1)
-        out = self.linear(out)
         return out
 
     def updateBestAccuracies(self, accuracy, accuracy_under_attack):

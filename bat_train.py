@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2, 3"
 import json
 
 import torch
@@ -49,7 +49,7 @@ train_loader = DataLoader(
     ),
     batch_size=config['batch_size'],
     shuffle=True,
-    num_workers=2,
+    num_workers=0,
     drop_last=True
 )
 
@@ -62,7 +62,7 @@ test_loader = tDataLoader(
         ])),
     batch_size=config['test_batch_size'],
     shuffle=False,
-    num_workers=2,
+    num_workers=0,
     drop_last=True
 )
 
